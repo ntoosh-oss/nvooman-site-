@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+<title id="title">عدسة سكليرال فوق القرنية</title><desc id="desc">رسم توضيحي للعدسة السكليرال وطبقة السائل فوق القرنية</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eef9f8"/><stop offset="1" stop-color="#d9f0f2"/></linearGradient>
+  <linearGradient id="lens" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8dd8dd" stop-opacity=".72"/><stop offset="1" stop-color="#3e9eb0" stop-opacity=".3"/></linearGradient>
+  <filter id="sh"><feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#0f5369" flood-opacity=".16"/></filter>
+</defs>
+<rect width="800" height="600" rx="48" fill="url(#bg)"/>
+<g filter="url(#sh)">
+  <path d="M95 350c105-150 220-214 346-193 127 22 205 122 264 206-124 104-244 147-366 127-113-18-196-78-244-140z" fill="#fff"/>
+  <ellipse cx="395" cy="346" rx="195" ry="122" fill="#f9feff" stroke="#badfe2" stroke-width="6"/>
+  <circle cx="402" cy="348" r="92" fill="#79c9cf"/><circle cx="402" cy="348" r="38" fill="#174e67"/><circle cx="430" cy="316" r="13" fill="#fff" opacity=".92"/>
+  <path d="M216 329c58-112 120-165 187-160 79 6 142 61 189 165-54-44-119-66-195-66-72 0-132 21-181 61z" fill="url(#lens)" stroke="#267f91" stroke-width="7"/>
+  <path d="M274 292c40-31 83-46 129-46 48 0 92 15 132 46-37-13-80-20-130-20-49 0-93 7-131 20z" fill="#d7f5f6" opacity=".85"/>
+</g>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+<title id="title">عين صناعية تجميلية مخصصة</title><desc id="desc">رسم فني لقزحية مخصصة وأداة قياس لون العين</desc>
+<defs>
+ <linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f7fbf9"/><stop offset="1" stop-color="#e4f3ef"/></linearGradient>
+ <radialGradient id="iris"><stop offset="0" stop-color="#173f58"/><stop offset=".3" stop-color="#285d79"/><stop offset=".65" stop-color="#73a8ab"/><stop offset="1" stop-color="#c7d9c7"/></radialGradient>
+ <filter id="s"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0c4658" flood-opacity=".16"/></filter>
+</defs>
+<rect width="800" height="600" rx="48" fill="url(#b)"/>
+<g transform="translate(130 110)" filter="url(#s)">
+ <ellipse cx="270" cy="185" rx="245" ry="160" fill="#fff" stroke="#d5e9e4" stroke-width="6"/>
+ <circle cx="270" cy="185" r="108" fill="url(#iris)"/>
+ <circle cx="270" cy="185" r="46" fill="#102b3b"/>
+ <g fill="none" stroke="#eff9f5" stroke-opacity=".5">
+  <circle cx="270" cy="185" r="88"/><circle cx="270" cy="185" r="69"/><path d="M270 77v216M162 185h216M194 109l152 152M346 109L194 261"/>
+ </g>
+ <circle cx="310" cy="142" r="18" fill="#fff" opacity=".94"/>
+</g>
+</svg>
