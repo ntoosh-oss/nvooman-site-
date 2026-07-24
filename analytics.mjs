@@ -12,10 +12,11 @@ const ATTRIBUTION_KEY = "nvo_campaign_attribution";
 
 function sendEvent(name, parameters = {}) {
   if (!NVO_EVENT_NAMES.includes(name) || typeof window.gtag !== "function") return;
+  const attribution = getAttribution();
   window.gtag("event", name, sanitizeAnalyticsParams({
     page_path: window.location.pathname,
     page_title: document.title,
-    campaign_source: getAttribution().utm_source,
+    ...attribution,
     ...parameters,
   }));
 }
@@ -105,6 +106,7 @@ function installGoogleTag(measurementId) {
     allow_google_signals: false,
     allow_ad_personalization_signals: false,
     cookie_flags: "SameSite=Lax;Secure",
+    send_page_view: true,
   });
   const script = document.createElement("script");
   script.async = true;

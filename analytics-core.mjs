@@ -26,7 +26,11 @@ const ALLOWED_PARAMETERS = new Set([
   "content_title",
   "branch_name",
   "form_name",
-  "campaign_source",
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
 ]);
 
 const UTM_KEYS = Object.freeze([
