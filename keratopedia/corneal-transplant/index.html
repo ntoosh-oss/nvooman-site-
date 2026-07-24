@@ -136,7 +136,7 @@
 <header>
   <div class="wrap nav">
     <a href="/keratopedia" class="logo">
-      <img class="mark" src="/assets/keratopedia/logo-mark.png" alt="شعار الرؤية الجديدة للبصريات">
+      <img class="mark" src="/assets/keratopedia/logo-mark.png" width="167" height="120" alt="شعار الرؤية الجديدة للبصريات">
       <span>الرؤية الجديدة<small>New Vision Optics · سلطنة عُمان</small></span>
     </a>
     <nav class="nav-links">
@@ -146,7 +146,7 @@
       <a href="/keratopedia#faq">الأسئلة الشائعة</a>
       <a href="/keratopedia#locations">الفروع</a>
       <a href="https://nvoshop.com" target="_blank" rel="noopener">المتجر</a>
-      <a href="/en/keratopedia">English</a>
+      <a href="/">الموقع الرئيسي</a>
     </nav>
     <div class="nav-cta">
       <a class="btn btn-ghost" href="/keratopedia#book">احجز موعد</a>
@@ -155,7 +155,7 @@
         واتساب
       </a>
     </div>
-    <button class="burger" id="burger" aria-label="القائمة"><span></span><span></span><span></span></button>
+    <button class="burger" id="burger" aria-label="القائمة" aria-expanded="false" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
     <a href="/keratopedia#learn">تعرّف على المرض</a>
@@ -164,7 +164,7 @@
     <a href="/keratopedia#faq">الأسئلة الشائعة</a>
     <a href="/keratopedia#locations">الفروع</a>
     <a href="https://nvoshop.com" target="_blank" rel="noopener">المتجر الإلكتروني</a>
-    <a href="/en/keratopedia">English</a>
+    <a href="/">الموقع الرئيسي</a>
     <a class="btn btn-green" href="/keratopedia#book">احجز موعد الآن</a>
   </div>
 </header>
@@ -265,7 +265,7 @@
     <div class="foot-top">
       <div>
         <a href="/keratopedia" class="logo">
-          <img class="mark" src="/assets/keratopedia/logo-mark.png" alt="شعار الرؤية الجديدة للبصريات">
+          <img class="mark" src="/assets/keratopedia/logo-mark.png" width="167" height="120" alt="شعار الرؤية الجديدة للبصريات">
           <span>الرؤية الجديدة<small>New Vision Optics · سلطنة عُمان</small></span>
         </a>
         <p style="margin-top:14px;font-size:15px;max-width:340px">مركز متخصص في تشخيص ومتابعة القرنية المخروطية وتركيب العدسات الطبية المتخصصة في سلطنة عُمان.</p>
@@ -344,8 +344,12 @@ document.getElementById("year").textContent = new Date().getFullYear();
 
 /* ---- قائمة الجوال ---- */
 const burger=document.getElementById("burger"), mm=document.getElementById("mobileMenu");
-burger.addEventListener("click",()=>mm.classList.toggle("show"));
-mm.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>mm.classList.remove("show")));
+function setMobileMenu(open){
+  mm.classList.toggle("show",open);
+  burger.setAttribute("aria-expanded",open?"true":"false");
+}
+burger.addEventListener("click",()=>setMobileMenu(!mm.classList.contains("show")));
+mm.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>setMobileMenu(false)));
 
 /* ---- فحص الأعراض ---- */
 const symps=document.querySelectorAll(".symp"), sr=document.getElementById("sympResult");
