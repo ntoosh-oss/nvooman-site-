@@ -62,14 +62,84 @@ function attribute(tag, name) {
   return new RegExp(`\\b${name}=["']([^"']*)["']`, "i").exec(tag)?.[1];
 }
 
+function elementText(html, name) {
+  return new RegExp(`<${name}\\b[^>]*>([\\s\\S]*?)<\\/${name}>`, "i").exec(
+    html,
+  )?.[1].trim();
+}
+
+function jsonLdTypes(documents) {
+  const types = new Set();
+  const queue = [...documents];
+
+  while (queue.length) {
+    const value = queue.pop();
+    if (Array.isArray(value)) {
+      queue.push(...value);
+    } else if (value && typeof value === "object") {
+      const type = value["@type"];
+      if (type) {
+        for (const item of Array.isArray(type) ? type : [type]) types.add(item);
+      }
+      queue.push(...Object.values(value));
+    }
+  }
+
+  return types;
+}
+
 const allFiles = await walk(root);
 const htmlFiles = allFiles.filter((file) => file.endsWith(".html"));
 const sitemap = await readFile(path.join(root, "sitemap.xml"), "utf8");
+const robots = await readFile(path.join(root, "robots.txt"), "utf8");
 const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
   (match) => match[1],
 );
+const bilingualPairs = [
+  ["/", "/en"],
+  ["/keratoconus", "/en/keratoconus"],
+  ["/scleral-lenses", "/en/scleral-lenses"],
+  ["/specialty-lenses", "/en/specialty-lenses"],
+  ["/corneal-topography", "/en/corneal-topography"],
+  ["/ocular-prosthetics", "/en/ocular-prosthetics"],
+  ["/lens-solutions", "/en/lens-solutions"],
+  ["/branches", "/en/branches"],
+  ["/privacy", "/en/privacy"],
+];
+const keratopediaRoutes = [
+  "/keratopedia",
+  "/keratopedia/lasik-keratoconus",
+  "/keratopedia/eye-rubbing",
+  "/keratopedia/cost",
+  "/keratopedia/symptoms",
+  "/keratopedia/diagnosis",
+  "/keratopedia/cross-linking",
+  "/keratopedia/scleral-lenses",
+  "/keratopedia/scleral-vs-rgp",
+  "/keratopedia/children",
+  "/keratopedia/corneal-transplant",
+];
+const expectedSitemapUrls = [
+  ...bilingualPairs.flat(),
+  ...keratopediaRoutes,
+].map((route) => new URL(route, `${siteOrigin}/`).href);
 
 assert.ok(sitemapUrls.length > 0, "Sitemap must contain URLs");
+assert.match(
+  robots,
+  /^Sitemap: https:\/\/www\.nvooman\.com\/sitemap\.xml$/m,
+  "robots.txt must advertise the canonical sitemap URL",
+);
+assert.equal(
+  new Set(sitemapUrls).size,
+  sitemapUrls.length,
+  "Sitemap must not contain duplicate URLs",
+);
+assert.deepEqual(
+  [...sitemapUrls].sort(),
+  [...expectedSitemapUrls].sort(),
+  "Sitemap must contain exactly the approved 29 canonical URLs",
+);
 assert.ok(
   !sitemap.includes("/en/keratopedia"),
   "Sitemap must not advertise the unavailable English Keratopedia page",
@@ -86,6 +156,17 @@ for (const sitemapUrl of sitemapUrls) {
 
 let internalLinksChecked = 0;
 let imagesChecked = 0;
+const indexableTitles = new Map();
+const indexableDescriptions = new Map();
+const indexableCanonicals = new Map();
+const priorityRoutes = new Set([
+  "/keratoconus",
+  "/en/keratoconus",
+  "/scleral-lenses",
+  "/en/scleral-lenses",
+  "/corneal-topography",
+  "/en/corneal-topography",
+]);
 const branchPhones = [
   "+96898268820",
   "+96871576116",
@@ -112,6 +193,82 @@ for (const file of htmlFiles) {
     (html.match(/<link\b[^>]*rel=["']canonical["']/gi) ?? []).length,
     1,
     `${relative} must contain exactly one canonical link`,
+  );
+
+  const canonicalTag = tags(html, "link").find(
+    (link) => attribute(link, "rel")?.toLowerCase() === "canonical",
+  );
+  const canonical = attribute(canonicalTag, "href");
+  const isErrorPage = path.basename(file) === "404.html";
+
+  if (!isErrorPage) {
+    const expectedCanonical = new URL(route, `${siteOrigin}/`).href;
+    assert.equal(
+      canonical,
+      expectedCanonical,
+      `${relative} canonical must match its clean production URL`,
+    );
+  }
+
+  if (sitemapUrls.includes(canonical)) {
+    const title = elementText(html, "title");
+    const descriptionTag = tags(html, "meta").find(
+      (meta) => attribute(meta, "name")?.toLowerCase() === "description",
+    );
+    const description = attribute(descriptionTag, "content");
+
+    assert.ok(title, `${relative} is missing a title`);
+    assert.ok(description, `${relative} is missing a meta description`);
+    assert.ok(
+      !indexableTitles.has(title),
+      `${relative} duplicates the title used by ${indexableTitles.get(title)}`,
+    );
+    assert.ok(
+      !indexableDescriptions.has(description),
+      `${relative} duplicates the description used by ${indexableDescriptions.get(description)}`,
+    );
+    assert.ok(
+      !indexableCanonicals.has(canonical),
+      `${relative} duplicates the canonical used by ${indexableCanonicals.get(canonical)}`,
+    );
+    indexableTitles.set(title, relative);
+    indexableDescriptions.set(description, relative);
+    indexableCanonicals.set(canonical, relative);
+  }
+
+  const languagePair = bilingualPairs.find((pair) => pair.includes(route));
+  if (languagePair) {
+    const [arabicRoute, englishRoute] = languagePair;
+    const expectedAlternates = new Map([
+      ["ar-OM", new URL(arabicRoute, `${siteOrigin}/`).href],
+      ["en-OM", new URL(englishRoute, `${siteOrigin}/`).href],
+      ["x-default", new URL(arabicRoute, `${siteOrigin}/`).href],
+    ]);
+    const alternateTags = tags(html, "link").filter(
+      (link) => attribute(link, "rel")?.toLowerCase() === "alternate",
+    );
+
+    for (const [language, href] of expectedAlternates) {
+      const matches = alternateTags.filter(
+        (link) => attribute(link, "hreflang") === language,
+      );
+      assert.equal(
+        matches.length,
+        1,
+        `${relative} must contain exactly one ${language} alternate`,
+      );
+      assert.equal(
+        attribute(matches[0], "href"),
+        href,
+        `${relative} has an incorrect ${language} alternate`,
+      );
+    }
+  }
+
+  assert.doesNotMatch(
+    html,
+    /godaddysites\.com|powered by godaddy|websites \+ marketing/i,
+    `${relative} still contains legacy GoDaddy branding`,
   );
 
   if (["branches.html", path.join("en", "branches.html")].includes(relative)) {
@@ -201,17 +358,86 @@ for (const file of htmlFiles) {
     );
   }
 
+  const jsonLdDocuments = [];
   for (const match of html.matchAll(
     /<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
   )) {
-    assert.doesNotThrow(
-      () => JSON.parse(match[1]),
-      `${relative} contains invalid JSON-LD`,
-    );
+    let document;
+    assert.doesNotThrow(() => {
+      document = JSON.parse(match[1]);
+    }, `${relative} contains invalid JSON-LD`);
+    jsonLdDocuments.push(document);
+  }
+
+  if (priorityRoutes.has(route)) {
+    const types = jsonLdTypes(jsonLdDocuments);
+    for (const requiredType of [
+      "BreadcrumbList",
+      "MedicalWebPage",
+      "Service",
+      "FAQPage",
+    ]) {
+      assert.ok(
+        types.has(requiredType),
+        `${relative} is missing ${requiredType} structured data`,
+      );
+    }
   }
 }
 
+assert.equal(
+  indexableCanonicals.size,
+  sitemapUrls.length,
+  "Every sitemap URL must have one matching self-canonical HTML page",
+);
+
 const vercel = JSON.parse(await readFile(path.join(root, "vercel.json"), "utf8"));
+assert.equal(vercel.cleanUrls, true, "Vercel clean URLs must remain enabled");
+assert.equal(
+  vercel.trailingSlash,
+  false,
+  "The canonical URL policy must remain slashless except for the homepage",
+);
+
+const expectedLegacyRedirectSources = [
+  "/",
+  "/nvms",
+  "/خدماتنا",
+  "/أفرعنا",
+  "/العروض-الحصرية",
+  "/ركن-المنشورات",
+  "/eyezone-blog",
+  "/f/مواصفات-عدسات-السكليرال-للقرنية-المخروطية",
+  "/f/:path*",
+  "/ola/services/driving-license-test",
+  "/ola/:path*",
+  "/m/:path*",
+];
+assert.deepEqual(
+  vercel.redirects.map((redirect) => redirect.source),
+  expectedLegacyRedirectSources,
+  "Legacy redirects must be complete and ordered before their wildcards",
+);
+
+for (const redirect of vercel.redirects) {
+  assert.equal(
+    redirect.statusCode,
+    301,
+    `Legacy redirect must be permanent: ${redirect.source}`,
+  );
+  assert.equal(
+    new URL(redirect.destination).origin,
+    siteOrigin,
+    `Redirect destination must use the canonical www origin: ${redirect.source}`,
+  );
+}
+
+assert.deepEqual(
+  vercel.redirects[0].has,
+  [{ type: "query", key: "blog", value: "y" }],
+  "The homepage redirect must apply only to the legacy ?blog=y URL",
+);
+
 const globalHeaders = vercel.headers.find((entry) => entry.source === "/(.*)");
 assert.ok(globalHeaders, "Global security headers are missing");
 
