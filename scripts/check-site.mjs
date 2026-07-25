@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteOrigin = "https://www.nvooman.com";
@@ -402,18 +402,7 @@ assert.equal(
 const expectedLegacyRedirectSources = [
   "/",
   "/nvms",
-  "/%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%D9%86%D8%A7",
-  "/خدماتنا",
-  "/%D8%A3%D9%81%D8%B1%D8%B9%D9%86%D8%A7",
-  "/أفرعنا",
-  "/%D8%A7%D9%84%D8%B9%D8%B1%D9%88%D8%B6-%D8%A7%D9%84%D8%AD%D8%B5%D8%B1%D9%8A%D8%A9",
-  "/العروض-الحصرية",
-  "/%D8%B1%D9%83%D9%86-%D8%A7%D9%84%D9%85%D9%86%D8%B4%D9%88%D8%B1%D8%A7%D8%AA",
-  "/ركن-المنشورات",
   "/eyezone-blog",
-  "/f/%D9%85%D9%88%D8%A7%D8%B5%D9%81%D8%A7%D8%AA-%D8%B9%D8%AF%D8%B3%D8%A7%D8%AA-%D8%A7%D9%84%D8%B3%D9%83%D9%84%D9%8A%D8%B1%D8%A7%D9%84-%D9%84%D9%84%D9%82%D8%B1%D9%86%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D8%AE%D8%B1%D9%88%D8%B7%D9%8A%D8%A9",
-  "/f/مواصفات-عدسات-السكليرال-للقرنية-المخروطية",
-  "/f/:path*",
   "/ola/services/driving-license-test",
   "/ola/:path*",
   "/m/:path*",
@@ -441,6 +430,44 @@ assert.deepEqual(
   vercel.redirects[0].has,
   [{ type: "query", key: "blog", value: "y" }],
   "The homepage redirect must apply only to the legacy ?blog=y URL",
+);
+
+const middlewareModule = await import(
+  pathToFileURL(path.join(root, "middleware.mjs")).href
+);
+assert.deepEqual(
+  middlewareModule.config.matcher,
+  ["/:legacy", "/f/:path*"],
+  "Routing middleware must be scoped to legacy single-segment and article paths",
+);
+
+const middlewareRedirectCases = [
+  ["/خدماتنا", "/"],
+  ["/أفرعنا", "/branches"],
+  ["/العروض-الحصرية", "/scleral-lenses"],
+  ["/ركن-المنشورات", "/keratopedia"],
+  [
+    "/f/مواصفات-عدسات-السكليرال-للقرنية-المخروطية",
+    "/scleral-lenses",
+  ],
+  ["/f/legacy-article", "/keratopedia"],
+];
+
+for (const [source, destination] of middlewareRedirectCases) {
+  const requestUrl = `${siteOrigin}${encodeURI(source)}?utm_source=legacy`;
+  const response = middlewareModule.default(new Request(requestUrl));
+  assert.equal(response?.status, 301, `${source} middleware redirect must be 301`);
+  assert.equal(
+    response.headers.get("location"),
+    `${new URL(destination, `${siteOrigin}/`).href}?utm_source=legacy`,
+    `${source} middleware redirect has the wrong destination`,
+  );
+}
+
+assert.equal(
+  middlewareModule.default(new Request(`${siteOrigin}/keratoconus`)),
+  undefined,
+  "Routing middleware must pass canonical pages through unchanged",
 );
 
 const globalHeaders = vercel.headers.find((entry) => entry.source === "/(.*)");
