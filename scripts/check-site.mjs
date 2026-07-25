@@ -433,7 +433,7 @@ assert.deepEqual(
 );
 
 const middlewareModule = await import(
-  pathToFileURL(path.join(root, "middleware.mjs")).href
+  pathToFileURL(path.join(root, "middleware.js")).href
 );
 assert.deepEqual(
   middlewareModule.config.matcher,
