@@ -11,7 +11,7 @@ const legacyArabicRedirects = new Map([
 ]);
 
 export const config = {
-  matcher: ["/:legacy", "/f/:path*"],
+  matcher: ["/", "/:legacy", "/f/:path*"],
 };
 
 export default function middleware(request) {
@@ -24,13 +24,18 @@ export default function middleware(request) {
     return;
   }
 
-  const destination =
-    legacyArabicRedirects.get(pathname) ??
-    (pathname.startsWith("/f/") ? "/keratopedia" : undefined);
+  const isLegacyBlog =
+    pathname === "/" && requestUrl.searchParams.get("blog") === "y";
+  const destination = isLegacyBlog
+    ? "/keratopedia"
+    : legacyArabicRedirects.get(pathname) ??
+      (pathname.startsWith("/f/") ? "/keratopedia" : undefined);
   if (!destination) return;
 
   const location = new URL(destination, canonicalOrigin);
-  location.search = requestUrl.search;
+  const destinationSearch = new URLSearchParams(requestUrl.searchParams);
+  if (isLegacyBlog) destinationSearch.delete("blog");
+  location.search = destinationSearch.toString();
 
   return new Response(null, {
     status: 301,

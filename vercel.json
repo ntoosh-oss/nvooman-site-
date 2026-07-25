@@ -4,18 +4,6 @@
   "trailingSlash": false,
   "redirects": [
     {
-      "source": "/",
-      "has": [
-        {
-          "type": "query",
-          "key": "blog",
-          "value": "y"
-        }
-      ],
-      "destination": "https://www.nvooman.com/keratopedia",
-      "statusCode": 301
-    },
-    {
       "source": "/nvms",
       "destination": "https://www.nvooman.com/lens-solutions",
       "statusCode": 301

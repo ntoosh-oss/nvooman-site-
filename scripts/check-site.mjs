@@ -400,7 +400,6 @@ assert.equal(
 );
 
 const expectedLegacyRedirectSources = [
-  "/",
   "/nvms",
   "/eyezone-blog",
   "/ola/services/driving-license-test",
@@ -426,19 +425,13 @@ for (const redirect of vercel.redirects) {
   );
 }
 
-assert.deepEqual(
-  vercel.redirects[0].has,
-  [{ type: "query", key: "blog", value: "y" }],
-  "The homepage redirect must apply only to the legacy ?blog=y URL",
-);
-
 const middlewareModule = await import(
   pathToFileURL(path.join(root, "middleware.js")).href
 );
 assert.deepEqual(
   middlewareModule.config.matcher,
-  ["/:legacy", "/f/:path*"],
-  "Routing middleware must be scoped to legacy single-segment and article paths",
+  ["/", "/:legacy", "/f/:path*"],
+  "Routing middleware must be scoped to the legacy query, single-segment, and article paths",
 );
 
 const middlewareRedirectCases = [
@@ -463,6 +456,22 @@ for (const [source, destination] of middlewareRedirectCases) {
     `${source} middleware redirect has the wrong destination`,
   );
 }
+
+const legacyBlogResponse = middlewareModule.default(
+  new Request(`${siteOrigin}/?blog=y&utm_source=legacy`),
+);
+assert.equal(legacyBlogResponse?.status, 301, "Legacy blog query must be 301");
+assert.equal(
+  legacyBlogResponse.headers.get("location"),
+  `${siteOrigin}/keratopedia?utm_source=legacy`,
+  "Legacy blog query must be removed while campaign parameters are preserved",
+);
+
+assert.equal(
+  middlewareModule.default(new Request(`${siteOrigin}/`)),
+  undefined,
+  "Routing middleware must pass the canonical homepage through unchanged",
+);
 
 assert.equal(
   middlewareModule.default(new Request(`${siteOrigin}/keratoconus`)),
