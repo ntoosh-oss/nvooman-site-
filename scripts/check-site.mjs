@@ -498,14 +498,13 @@ for (const name of [
   );
 }
 
-for (const forbiddenOrigin of ["fonts.googleapis.com", "fonts.gstatic.com"]) {
-  for (const file of htmlFiles) {
-    assert.doesNotMatch(
-      await readFile(file, "utf8"),
-      new RegExp(forbiddenOrigin.replace(".", "\\."), "i"),
-      `${path.relative(root, file)} must not load render-blocking remote fonts`,
-    );
-  }
+for (const file of htmlFiles) {
+  const html = await readFile(file, "utf8");
+  assert.match(
+    html,
+    /fonts\.googleapis\.com\/css2\?family=Cairo:wght@400;500;600;700;800;900&display=swap/i,
+    `${path.relative(root, file)} must load the approved Cairo weight set`,
+  );
 }
 
 console.log(
