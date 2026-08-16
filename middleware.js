@@ -11,7 +11,7 @@ const legacyArabicRedirects = new Map([
 ]);
 
 export const config = {
-  matcher: ["/", "/:legacy", "/f/:path*"],
+  matcher: ["/:path*"],
 };
 
 export default function middleware(request) {
@@ -22,6 +22,19 @@ export default function middleware(request) {
     pathname = decodeURIComponent(requestUrl.pathname);
   } catch {
     return;
+  }
+
+  if (requestUrl.hostname === "keratopedia.nvooman.com") {
+    const legacyPath = pathname === "/" ? "" : pathname.replace(/^\/keratopedia(?=\/|$)/, "");
+    const location = new URL(`/keratopedia${legacyPath}`, canonicalOrigin);
+    location.search = requestUrl.searchParams.toString();
+    return new Response(null, {
+      status: 301,
+      headers: {
+        "Cache-Control": "public, max-age=0, s-maxage=86400",
+        Location: location.href,
+      },
+    });
   }
 
   const isLegacyBlog =

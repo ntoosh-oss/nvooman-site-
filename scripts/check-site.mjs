@@ -431,9 +431,25 @@ const middlewareModule = await import(
 );
 assert.deepEqual(
   middlewareModule.config.matcher,
-  ["/", "/:legacy", "/f/:path*"],
-  "Routing middleware must be scoped to the legacy query, single-segment, and article paths",
+  ["/:path*"],
+  "Routing middleware must cover all paths for the legacy subdomain redirect",
 );
+
+for (const [source, destination] of [
+  ["/", "/keratopedia"],
+  ["/symptoms", "/keratopedia/symptoms"],
+  ["/keratopedia/diagnosis", "/keratopedia/diagnosis"],
+]) {
+  const response = middlewareModule.default(
+    new Request(`https://keratopedia.nvooman.com${source}?utm_source=legacy-subdomain`),
+  );
+  assert.equal(response?.status, 301, `${source} legacy subdomain redirect must be 301`);
+  assert.equal(
+    response.headers.get("location"),
+    `${new URL(destination, `${siteOrigin}/`).href}?utm_source=legacy-subdomain`,
+    `${source} legacy subdomain redirect has the wrong destination`,
+  );
+}
 
 const middlewareRedirectCases = [
   ["/خدماتنا", "/"],
