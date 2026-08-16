@@ -4,6 +4,11 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/scleral-lenses-al-buraimi",
+      "destination": "https://nvooman.com/scleral-lenses",
+      "statusCode": 301
+    },
+    {
       "source": "/nvms",
       "destination": "https://nvooman.com/lens-solutions",
       "statusCode": 301

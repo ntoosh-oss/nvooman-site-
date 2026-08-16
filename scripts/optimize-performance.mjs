@@ -24,6 +24,7 @@ for (const file of await walk(root)) {
   let html = await readFile(file, "utf8");
   html = html
     .replaceAll("https://www.nvooman.com", "https://nvooman.com")
+    .replace(' يمكن مراجعة <a href="scleral-lenses-al-buraimi">دليل العدسات السكليرال في البريمي</a> قبل الحجز.', "")
     .replace(/<link rel="preload" href="\/assets\/fonts\/cairo-(?:arabic|latin)\.woff2"[^>]*>\r?\n?/g, "")
     .replace(/<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">\r?\n?/g, "")
     .replace(/<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>\r?\n?/g, "")
