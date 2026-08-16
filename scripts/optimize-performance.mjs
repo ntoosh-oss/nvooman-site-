@@ -24,14 +24,16 @@ for (const file of await walk(root)) {
   let html = await readFile(file, "utf8");
   html = html
     .replaceAll("https://www.nvooman.com", "https://nvooman.com")
+    .replaceAll("موسوعة كيراتوبيديا", "موسوعة القرنية المخروطية")
+    .replaceAll("كيراتوبيديا", "موسوعة القرنية المخروطية")
     .replace(' يمكن مراجعة <a href="scleral-lenses-al-buraimi">دليل العدسات السكليرال في البريمي</a> قبل الحجز.', "")
     .replace(
       '<a href="branches">الفروع</a><a href="https://www.nvoshop.com"',
-      '<a href="branches">الفروع</a><a href="keratopedia">كيراتوبيديا</a><a href="https://www.nvoshop.com"',
+      '<a href="branches">الفروع</a><a href="keratopedia">موسوعة القرنية المخروطية</a><a href="https://www.nvoshop.com"',
     )
     .replace(
       '<a href="branches">الفروع والتواصل</a><a href="https://www.nvoshop.com"',
-      '<a href="branches">الفروع والتواصل</a><a href="keratopedia">موسوعة كيراتوبيديا</a><a href="https://www.nvoshop.com"',
+      '<a href="branches">الفروع والتواصل</a><a href="keratopedia">موسوعة القرنية المخروطية</a><a href="https://www.nvoshop.com"',
     )
     .replace(/<link rel="preload" href="\/assets\/fonts\/cairo-(?:arabic|latin)\.woff2"[^>]*>\r?\n?/g, "")
     .replace(/<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">\r?\n?/g, "")
@@ -54,7 +56,7 @@ for (const file of await walk(root)) {
   if (relative === "index.html" && !html.includes('id="keratopedia-feature"')) {
     html = html.replace(
       '<section class="section"><div class="container shop-banner">',
-      '<section class="section-sm" id="keratopedia-feature"><div class="container cta"><div><span class="eyebrow light">كيراتوبيديا</span><h2>موسوعة عربية متخصصة لصحة القرنية والعدسات</h2><p>مقالات موثوقة ومراجعة عن القرنية المخروطية، العدسات السكليرال، تثبيت القرنية، وفهم خيارات تصحيح الرؤية.</p></div><a class="btn btn-white" href="keratopedia">زيارة موسوعة كيراتوبيديا</a></div></section><section class="section"><div class="container shop-banner">',
+      '<section class="section-sm" id="keratopedia-feature"><div class="container cta"><div><span class="eyebrow light">موسوعة القرنية المخروطية</span><h2>موسوعة عربية متخصصة لصحة القرنية والعدسات</h2><p>مقالات موثوقة ومراجعة عن القرنية المخروطية، العدسات السكليرال، تثبيت القرنية، وفهم خيارات تصحيح الرؤية.</p></div><a class="btn btn-white" href="keratopedia">زيارة موسوعة القرنية المخروطية</a></div></section><section class="section"><div class="container shop-banner">',
     );
   }
   await writeFile(file, html);
