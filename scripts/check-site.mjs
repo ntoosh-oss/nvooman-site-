@@ -119,9 +119,11 @@ const keratopediaRoutes = [
   "/keratopedia/children",
   "/keratopedia/corneal-transplant",
 ];
+const localSeoRoutes = ["/scleral-lenses-al-buraimi"];
 const expectedSitemapUrls = [
   ...bilingualPairs.flat(),
   ...keratopediaRoutes,
+  ...localSeoRoutes,
 ].map((route) => new URL(route, `${siteOrigin}/`).href);
 
 assert.ok(sitemapUrls.length > 0, "Sitemap must contain URLs");
