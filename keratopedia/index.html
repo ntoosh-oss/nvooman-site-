@@ -37,9 +37,7 @@
 <meta name="twitter:card" content="summary_large_image">
 
 <!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
 
 <!-- ================ Structured data (FAQ + Business) for Google ================ -->
 <script type="application/ld+json">
@@ -156,6 +154,8 @@
 }
 </script>
 
+<link rel="preload" href="/assets/fonts/cairo-arabic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/cairo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/keratopedia/keratopedia.css">
 </head>
 <body>
@@ -165,7 +165,7 @@
 <header>
   <div class="wrap nav">
     <a href="/" class="logo" aria-label="العودة إلى الموقع الرئيسي للرؤية الجديدة للبصريات">
-      <img class="mark" src="/assets/keratopedia/logo-mark.png" width="167" height="120" alt="شعار الرؤية الجديدة للبصريات">
+      <img decoding="async" class="mark" src="/assets/keratopedia/logo-mark.png" width="167" height="120" alt="شعار الرؤية الجديدة للبصريات">
       <span>الرؤية الجديدة<small>New Vision Optics · سلطنة عُمان</small></span>
     </a>
     <nav class="nav-links">
@@ -784,7 +784,7 @@ document.querySelectorAll(".q button").forEach(btn=>{
 });
 
 /* ---- نموذج الحجز → واتساب ---- */
-document.getElementById("bookForm").addEventListener("submit",e=>{
+document.getElementById("bookForm")?.addEventListener("submit",e=>{
   e.preventDefault();
   const name=document.getElementById("fName").value.trim();
   const phone=document.getElementById("fPhone").value.trim();

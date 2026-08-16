@@ -25,11 +25,11 @@
 <meta property="og:image" content="https://www.nvooman.com/assets/keratopedia/cover.jpg">
 <meta name="twitter:card" content="summary_large_image">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
 <link rel="icon" type="image/png" href="/assets/keratopedia/favicon.png">
 <link rel="apple-touch-icon" href="/assets/keratopedia/favicon.png">
+<link rel="preload" href="/assets/fonts/cairo-arabic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/cairo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/keratopedia/keratopedia.css">
 
 <script type="application/ld+json">
@@ -136,7 +136,7 @@
 <header>
   <div class="wrap nav">
     <a href="/keratopedia" class="logo">
-      <img class="mark" src="/assets/keratopedia/logo-mark.png" width="167" height="120" alt="شعار الرؤية الجديدة للبصريات">
+      <img decoding="async" class="mark" src="/assets/keratopedia/logo-mark.png" width="167" height="120" alt="شعار الرؤية الجديدة للبصريات">
       <span>الرؤية الجديدة<small>New Vision Optics · سلطنة عُمان</small></span>
     </a>
     <nav class="nav-links">
@@ -268,7 +268,7 @@
     <div class="foot-top">
       <div>
         <a href="/keratopedia" class="logo">
-          <img class="mark" src="/assets/keratopedia/logo-mark.png" width="167" height="120" alt="شعار الرؤية الجديدة للبصريات">
+          <img decoding="async" class="mark" src="/assets/keratopedia/logo-mark.png" width="167" height="120" alt="شعار الرؤية الجديدة للبصريات">
           <span>الرؤية الجديدة<small>New Vision Optics · سلطنة عُمان</small></span>
         </a>
         <p style="margin-top:14px;font-size:15px;max-width:340px">مركز متخصص في تشخيص ومتابعة القرنية المخروطية وتركيب العدسات الطبية المتخصصة في سلطنة عُمان.</p>
@@ -373,7 +373,7 @@ document.querySelectorAll(".q button").forEach(btn=>{
 });
 
 /* ---- نموذج الحجز → واتساب ---- */
-document.getElementById("bookForm").addEventListener("submit",e=>{
+document.getElementById("bookForm")?.addEventListener("submit",e=>{
   e.preventDefault();
   const name=document.getElementById("fName").value.trim();
   const phone=document.getElementById("fPhone").value.trim();

@@ -37,6 +37,11 @@ function resolveRequestPath(pathname) {
 
 createServer((request, response) => {
   const url = new URL(request.url || "/", "http://127.0.0.1");
+  if (url.pathname === "/api/analytics-config") {
+    response.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    response.end("{}");
+    return;
+  }
   const file = resolveRequestPath(url.pathname);
 
   if (!file) {

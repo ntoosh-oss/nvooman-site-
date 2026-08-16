@@ -1,5 +1,9 @@
 {
   "name": "nvooman-site",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "optimize": "node scripts/optimize-performance.mjs",
+    "test": "node scripts/check-site.mjs"
+  }
 }

@@ -487,12 +487,25 @@ for (const name of [
   "Referrer-Policy",
   "Permissions-Policy",
   "X-Frame-Options",
+  "Strict-Transport-Security",
+  "Cross-Origin-Opener-Policy",
+  "Cross-Origin-Resource-Policy",
   "Content-Security-Policy",
 ]) {
   assert.ok(
     globalHeaders.headers.some((header) => header.key === name),
     `Missing security header: ${name}`,
   );
+}
+
+for (const forbiddenOrigin of ["fonts.googleapis.com", "fonts.gstatic.com"]) {
+  for (const file of htmlFiles) {
+    assert.doesNotMatch(
+      await readFile(file, "utf8"),
+      new RegExp(forbiddenOrigin.replace(".", "\\."), "i"),
+      `${path.relative(root, file)} must not load render-blocking remote fonts`,
+    );
+  }
 }
 
 console.log(
