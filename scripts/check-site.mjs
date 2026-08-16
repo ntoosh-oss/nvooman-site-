@@ -452,6 +452,7 @@ for (const [source, destination] of [
 }
 
 const middlewareRedirectCases = [
+  ["/en/keratopedia", "/keratopedia"],
   ["/خدماتنا", "/"],
   ["/أفرعنا", "/branches"],
   ["/العروض-الحصرية", "/scleral-lenses"],

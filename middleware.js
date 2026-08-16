@@ -1,5 +1,6 @@
 const canonicalOrigin = "https://nvooman.com";
 const legacyArabicRedirects = new Map([
+  ["/en/keratopedia", "/keratopedia"],
   ["/خدماتنا", "/"],
   ["/أفرعنا", "/branches"],
   ["/العروض-الحصرية", "/scleral-lenses"],
