@@ -23,6 +23,7 @@ async function walk(directory) {
 for (const file of await walk(root)) {
   let html = await readFile(file, "utf8");
   html = html
+    .replaceAll("https://www.nvooman.com", "https://nvooman.com")
     .replace(/<link rel="preload" href="\/assets\/fonts\/cairo-(?:arabic|latin)\.woff2"[^>]*>\r?\n?/g, "")
     .replace(/<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">\r?\n?/g, "")
     .replace(/<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>\r?\n?/g, "")
@@ -37,7 +38,7 @@ for (const file of await walk(root)) {
   const relative = path.relative(root, file).replaceAll(path.sep, "/");
   if (relative === "index.html" || relative === "en/index.html") {
     html = html.replace(
-      /<img decoding="async" class="hero-logo"/,
+      /<img decoding="async" class="hero-logo"(?: loading="eager" fetchpriority="high")*/,
       '<img decoding="async" class="hero-logo" loading="eager" fetchpriority="high"',
     );
   }
@@ -52,6 +53,12 @@ for (const relative of ["styles.css", "assets/keratopedia/keratopedia.css"]) {
     css += "\n/* lighthouse-layout */.hero-logo,.footer-logo img{height:auto;aspect-ratio:60/51;object-fit:contain}.whatsapp-fab{contain:layout paint}.section,.section-sm,.site-footer{content-visibility:auto;contain-intrinsic-size:auto 800px}\n";
   }
   await writeFile(file, css);
+}
+
+for (const relative of ["sitemap.xml", "robots.txt"]) {
+  const file = path.join(root, relative);
+  const content = await readFile(file, "utf8");
+  await writeFile(file, content.replaceAll("https://www.nvooman.com", "https://nvooman.com"));
 }
 
 console.log("Applied deterministic performance markup to all HTML pages.");

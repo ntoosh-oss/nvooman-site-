@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const siteOrigin = "https://www.nvooman.com";
+const siteOrigin = "https://nvooman.com";
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -127,7 +127,7 @@ const expectedSitemapUrls = [
 assert.ok(sitemapUrls.length > 0, "Sitemap must contain URLs");
 assert.match(
   robots,
-  /^Sitemap: https:\/\/www\.nvooman\.com\/sitemap\.xml$/m,
+  /^Sitemap: https:\/\/nvooman\.com\/sitemap\.xml$/m,
   "robots.txt must advertise the canonical sitemap URL",
 );
 assert.equal(

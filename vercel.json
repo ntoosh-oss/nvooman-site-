@@ -5,27 +5,27 @@
   "redirects": [
     {
       "source": "/nvms",
-      "destination": "https://www.nvooman.com/lens-solutions",
+      "destination": "https://nvooman.com/lens-solutions",
       "statusCode": 301
     },
     {
       "source": "/eyezone-blog",
-      "destination": "https://www.nvooman.com/keratopedia",
+      "destination": "https://nvooman.com/keratopedia",
       "statusCode": 301
     },
     {
       "source": "/ola/services/driving-license-test",
-      "destination": "https://www.nvooman.com/branches",
+      "destination": "https://nvooman.com/branches",
       "statusCode": 301
     },
     {
       "source": "/ola/:path*",
-      "destination": "https://www.nvooman.com/branches",
+      "destination": "https://nvooman.com/branches",
       "statusCode": 301
     },
     {
       "source": "/m/:path*",
-      "destination": "https://www.nvooman.com/",
+      "destination": "https://nvooman.com/",
       "statusCode": 301
     }
   ],

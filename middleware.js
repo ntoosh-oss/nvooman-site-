@@ -1,4 +1,4 @@
-const canonicalOrigin = "https://www.nvooman.com";
+const canonicalOrigin = "https://nvooman.com";
 const legacyArabicRedirects = new Map([
   ["/خدماتنا", "/"],
   ["/أفرعنا", "/branches"],
