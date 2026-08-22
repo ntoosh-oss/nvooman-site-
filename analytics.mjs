@@ -95,7 +95,7 @@ function installInteractionTracking() {
   });
 }
 
-function installGoogleTag(measurementId) {
+function installGoogleTag(measurementId, adsConversionId) {
   if (window.__nvoGoogleTagInstalled) return;
   window.__nvoGoogleTagInstalled = true;
   window.dataLayer = window.dataLayer || [];
@@ -108,6 +108,11 @@ function installGoogleTag(measurementId) {
     cookie_flags: "SameSite=Lax;Secure",
     send_page_view: true,
   });
+  if (adsConversionId) {
+    window.gtag("config", adsConversionId, {
+      allow_ad_personalization_signals: false,
+    });
+  }
   const script = document.createElement("script");
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
@@ -122,7 +127,7 @@ function installGoogleTag(measurementId) {
   }
 }
 
-function consentBanner(measurementId) {
+function consentBanner(measurementId, adsConversionId) {
   if (document.querySelector("[data-nvo-consent-banner]")) return;
   const arabic = document.documentElement.lang.toLocaleLowerCase().startsWith("ar");
   const banner = document.createElement("aside");
@@ -148,7 +153,7 @@ function consentBanner(measurementId) {
   accept.addEventListener("click", () => {
     window.localStorage.setItem(CONSENT_KEY, "granted");
     banner.remove();
-    installGoogleTag(measurementId);
+    installGoogleTag(measurementId, adsConversionId);
   }, { once: true });
   reject.addEventListener("click", () => {
     window.localStorage.setItem(CONSENT_KEY, "denied");
@@ -163,7 +168,7 @@ function consentBanner(measurementId) {
   document.body.append(banner);
 }
 
-function consentSettingsButton(measurementId) {
+function consentSettingsButton(measurementId, adsConversionId) {
   if (document.querySelector("[data-nvo-consent-settings]")) return;
   const arabic = document.documentElement.lang.toLocaleLowerCase().startsWith("ar");
   const button = document.createElement("button");
@@ -171,7 +176,7 @@ function consentSettingsButton(measurementId) {
   button.dataset.nvoConsentSettings = "true";
   button.textContent = arabic ? "إعدادات التحليلات" : "Analytics settings";
   button.style.cssText = "position:fixed;z-index:9998;inset:auto auto 8px 8px;border:1px solid #cbd8d5;border-radius:6px;padding:5px 8px;background:#fff;color:#45625d;font:11px Cairo,Tahoma,Arial,sans-serif;cursor:pointer";
-  button.addEventListener("click", () => consentBanner(measurementId));
+  button.addEventListener("click", () => consentBanner(measurementId, adsConversionId));
   document.body.append(button);
 }
 
@@ -185,12 +190,15 @@ async function start() {
   if (!response?.ok) return;
   const config = await response.json().catch(() => ({}));
   if (!/^G-[A-Z0-9]+$/.test(config.measurementId || "")) return;
-  consentSettingsButton(config.measurementId);
+  const adsConversionId = /^AW-\d+$/.test(config.adsConversionId || "")
+    ? config.adsConversionId
+    : null;
+  consentSettingsButton(config.measurementId, adsConversionId);
   const consent = window.localStorage.getItem(CONSENT_KEY);
   if (consent === "granted") {
-    installGoogleTag(config.measurementId);
+    installGoogleTag(config.measurementId, adsConversionId);
   } else if (consent !== "denied") {
-    consentBanner(config.measurementId);
+    consentBanner(config.measurementId, adsConversionId);
   }
 }
 
