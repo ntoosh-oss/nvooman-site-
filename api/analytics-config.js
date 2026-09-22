@@ -1,4 +1,4 @@
-module.exports = function analyticsConfig(request, response) {
+export default function analyticsConfig(request, response) {
   const measurementId = process.env.GA4_MEASUREMENT_ID || "";
   const adsConversionId = process.env.GOOGLE_ADS_CONVERSION_ID || "AW-9444322707";
   response.setHeader("Cache-Control", "private, no-store, max-age=0");
