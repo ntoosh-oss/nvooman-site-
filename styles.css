@@ -2,3 +2,9 @@
 .branch-card>div:last-child{min-width:0;flex:1}.branch-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}.branch-actions .text-link{margin-top:0;padding-top:0}
 
 /* lighthouse-layout */.hero-logo,.footer-logo img{height:auto;aspect-ratio:60/51;object-fit:contain}.whatsapp-fab{contain:layout paint}.section,.section-sm,.site-footer{content-visibility:auto;contain-intrinsic-size:auto 800px}
+
+/* Keep booking actions readable and the long navigation within smaller desktops. */
+.contact-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+#pricing,#buraimi,#other-branches{scroll-margin-top:110px}
+@media (min-width:881px) and (max-width:1380px){.header-actions .btn{display:none}.menu-toggle{display:grid;place-items:center}.nav{position:absolute;top:82px;right:16px;left:16px;display:none;flex-direction:column;align-items:stretch;gap:2px;padding:10px;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}.nav.open{display:flex}.nav a{padding:11px 13px;border-radius:12px;border-bottom:0}}
+@media(max-width:640px){.contact-actions .btn{width:100%}}
